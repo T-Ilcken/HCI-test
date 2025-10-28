@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TiltMath</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f4f8;
+      text-align: center;
+    }
+    #question {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .answers {
+      display: flex;
+      justify-content: space-around;
+      width: 80%;
+      font-size: 1.5rem;
+      margin-top: 1rem;
+    }
+    .answer {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: 0.3s;
+    }
+    .highlight {
+      background: #d0f0d0;
+      transform: scale(1.1);
+    }
+    #feedback {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      min-height: 2rem;
+    }
+    #score {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <div id="question"></div>
+  <div class="answers">
+    <div id="left" class="answer">–</div>
+    <div id="up" class="answer">–</div>
+    <div id="right" class="answer">–</div>
+  </div>
+  <div id="feedback"></div>
+
+  <script>
+    const qElem = document.getElementById("question");
+    const answers = {
+      left: document.getElementById("left"),
+      up: document.getElementById("up"),
+      right: document.getElementById("right"),
+    };
+    const feedback = document.getElementById("feedback");
+    const scoreElem = document.getElementById("score");
+
+    let correctSide = null;
+    let score = 0;
+
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      synth.speak(new SpeechSynthesisUtterance(text));
+    }
+
+    function newQuestion() {
+      const a = Math.floor(Math.random() * 10);
+      const b = Math.floor(Math.random() * 10);
+      const result = a + b;
+      qElem.textContent = `${a} + ${b} = ?`;
+
+      // shuffle answers
+      const options = [result,
+        result + (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * 3)),
+        result + (Math.random() < 0.5 ? -1 : 1) * (2 + Math.floor(Math.random() * 3))
+      ].sort(() => Math.random() - 0.5);
+
+      const sides = Object.keys(answers);
+      sides.forEach((side, i) => {
+        answers[side].textContent = options[i];
+        answers[side].classList.remove("highlight");
+      });
+
+      correctSide = sides[options.indexOf(result)];
+      feedback.textContent = "Tilt phone to choose!";
+    }
+
+    function checkAnswer(side) {
+      if (!correctSide) return;
+
+      if (side === correctSide) {
+        feedback.textContent = "✅ Correct!";
+        feedback.style.color = "green";
+        speak("Correct!");
+        navigator.vibrate(100);
+        score++;
+      } else {
+        feedback.textContent = "❌ Try again!";
+        feedback.style.color = "red";
+        speak("Try again!");
+        navigator.vibrate([50, 50, 50]);
+        score = Math.max(0, score - 1);
+      }
+      scoreElem.textContent = `Score: ${score}`;
+      correctSide = null;
+      setTimeout(newQuestion, 1500);
+    }
+
+    // Tilt detection
+    window.addEventListener("deviceorientation", (event) => {
+      const tiltLR = event.gamma; // left-right
+      const tiltFB = event.beta;  // front-back
+
+      // visual cue
+      Object.values(answers).forEach(el => el.classList.remove("highlight"));
+
+      if (tiltLR > 20) { answers.right.classList.add("highlight"); checkAnswer("right"); }
+      else if (tiltLR < -20) { answers.left.classList.add("highlight"); checkAnswer("left"); }
+      else if (tiltFB < -20) { answers.up.classList.add("highlight"); checkAnswer("up"); }
+    });
+
+    newQuestion();
+  </script>
+</body>
+</html>
