@@ -3,140 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TiltMath</title>
+  <title>Math Challenge</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background: #f0f4f8;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+
+    #container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
       text-align: center;
     }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #3498db;
+      color: white;
+    }
+
+    .answer-btn {
+      width: 100%;
+      background: #2ecc71;
+    }
+
     #question {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-    .answers {
-      display: flex;
-      justify-content: space-around;
-      width: 80%;
-      font-size: 1.5rem;
-      margin-top: 1rem;
-    }
-    .answer {
-      background: white;
-      border-radius: 1rem;
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      transition: 0.3s;
-    }
-    .highlight {
-      background: #d0f0d0;
-      transform: scale(1.1);
-    }
-    #feedback {
-      margin-top: 1rem;
-      font-size: 1.2rem;
-      min-height: 2rem;
-    }
-    #score {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 1rem;
+      font-size: 24px;
+      margin: 20px 0;
     }
   </style>
 </head>
 <body>
-  <div id="score">Score: 0</div>
-  <div id="question"></div>
-  <div class="answers">
-    <div id="left" class="answer">–</div>
-    <div id="up" class="answer">–</div>
-    <div id="right" class="answer">–</div>
+  <div id="container">
+    <h2>Math Challenge</h2>
+
+    <div id="modeSelect">
+      <p>Select mode:</p>
+      <button onclick="selectMode('click')">Click Mode</button>
+      <button onclick="selectMode('tilt')">Tilt Mode</button>
+    </div>
+
+    <button id="startBtn" style="display:none;" onclick="startGame()">Start</button>
+
+    <div id="game" style="display:none;">
+      <p>Time left: <span id="timer">60</span>s</p>
+      <p>Score: <span id="score">0</span></p>
+      <div id="question""></div>
+      <button class="answer-btn" id="ans1" onclick="answer(1)"></button>
+      <button class="answer-btn" id="ans2" onclick="answer(2)"></button>
+    </div>
+
+    <div id="result" style="display:none;"></div>
   </div>
-  <div id="feedback"></div>
 
   <script>
-    const qElem = document.getElementById("question");
-    const answers = {
-      left: document.getElementById("left"),
-      up: document.getElementById("up"),
-      right: document.getElementById("right"),
-    };
-    const feedback = document.getElementById("feedback");
-    const scoreElem = document.getElementById("score");
-
-    let correctSide = null;
+    let mode = null;
+    let timer = 60;
     let score = 0;
+    let correctAnswer = 0;
+    let tiltActive = false;
 
-    function speak(text) {
-      const synth = window.speechSynthesis;
-      synth.cancel();
-      synth.speak(new SpeechSynthesisUtterance(text));
+    function selectMode(m) {
+      mode = m;
+      document.getElementById('startBtn').style.display = 'block';
+    }
+
+    function startGame() {
+      score = 0;
+      timer = 60;
+      document.getElementById('score').innerText = score;
+      document.getElementById('modeSelect').style.display = 'none';
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      startTimer();
+      newQuestion();
+
+      if (mode === 'tilt') {
+        window.addEventListener('deviceorientation', handleTilt);
+      }
+    }
+
+    function startTimer() {
+      const interval = setInterval(() => {
+        timer--;
+        document.getElementById('timer').innerText = timer;
+        if (timer <= 0) {
+          clearInterval(interval);
+          endGame();
+        }
+      }, 1000);
     }
 
     function newQuestion() {
-      const a = Math.floor(Math.random() * 10);
-      const b = Math.floor(Math.random() * 10);
-      const result = a + b;
-      qElem.textContent = `${a} + ${b} = ?`;
+      let a = Math.floor(Math.random() * 10) + 1;
+      let b = Math.floor(Math.random() * 10) + 1;
+      const question = `${a} + ${b}`;
+      correctAnswer = a + b;
 
-      // shuffle answers
-      const options = [result,
-        result + (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * 3)),
-        result + (Math.random() < 0.5 ? -1 : 1) * (2 + Math.floor(Math.random() * 3))
-      ].sort(() => Math.random() - 0.5);
+      let wrong = correctAnswer + (Math.floor(Math.random() * 5) + 1);
 
-      const sides = Object.keys(answers);
-      sides.forEach((side, i) => {
-        answers[side].textContent = options[i];
-        answers[side].classList.remove("highlight");
-      });
-
-      correctSide = sides[options.indexOf(result)];
-      feedback.textContent = "Tilt phone to choose!";
+      let pos = Math.random() < 0.5 ? 1 : 2;
+      document.getElementById('question').innerText = question;
+      document.getElementById('ans1').innerText = pos === 1 ? correctAnswer : wrong;
+      document.getElementById('ans2').innerText = pos === 2 ? correctAnswer : wrong;
     }
 
-    function checkAnswer(side) {
-      if (!correctSide) return;
-
-      if (side === correctSide) {
-        feedback.textContent = "✅ Correct!";
-        feedback.style.color = "green";
-        speak("Correct!");
-        navigator.vibrate(100);
+    function answer(btn) {
+      const chosen = btn === 1 ? document.getElementById('ans1').innerText : document.getElementById('ans2').innerText;
+      if (parseInt(chosen) === correctAnswer) {
         score++;
-      } else {
-        feedback.textContent = "❌ Try again!";
-        feedback.style.color = "red";
-        speak("Try again!");
-        navigator.vibrate([50, 50, 50]);
-        score = Math.max(0, score - 1);
+        document.getElementById('score').innerText = score;
       }
-      scoreElem.textContent = `Score: ${score}`;
-      correctSide = null;
-      setTimeout(newQuestion, 1500);
+      newQuestion();
     }
 
-    // Tilt detection
-    window.addEventListener("deviceorientation", (event) => {
-      const tiltLR = event.gamma; // left-right
-      const tiltFB = event.beta;  // front-back
+    function handleTilt(event) {
+      if (!tiltActive) {
+        tiltActive = true;
+        setTimeout(() => tiltActive = false, 800);
+      } else {
+        return;
+      }
 
-      // visual cue
-      Object.values(answers).forEach(el => el.classList.remove("highlight"));
+      if (event.gamma > 15) {
+        answer(1);
+      } else if (event.gamma < -15) {
+        answer(2);
+      }
+    }
 
-      if (tiltLR > 20) { answers.right.classList.add("highlight"); checkAnswer("right"); }
-      else if (tiltLR < -20) { answers.left.classList.add("highlight"); checkAnswer("left"); }
-      else if (tiltFB < -20) { answers.up.classList.add("highlight"); checkAnswer("up"); }
-    });
+    function endGame() {
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('result').innerHTML = `<h3>Time's up!</h3><p>Your score: ${score}</p>`;
 
-    newQuestion();
+      window.removeEventListener('deviceorientation', handleTilt);
+    }
   </script>
 </body>
 </html>
+
+
