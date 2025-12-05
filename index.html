@@ -138,7 +138,6 @@
 		let answered = false;
 		let betaNeutral = 0;
 		let alphaNeutral = 0;
-		let threshold = 20;
 		
 		function selectMode(m){
 			mode = m;
@@ -241,13 +240,13 @@
 			}
 			let alphaTilt = event.alpha;
 			let betaTilt = event.beta - betaNeutral;
-			if(alphaTilt > threshold && alphaTilt < 90 + threshold){
+			if(alphaTilt > 30 && alphaTilt < 120){
 				answer(1);
-			}else if(alphaTilt < 360 - threshold && alphaTilt > 270 - threshold){
+			}else if(alphaTilt < 330 && alphaTilt > 240){
 				answer(2);
-			}else if(betaTilt > threshold){
+			}else if(betaTilt > 30){
 				answer(3);
-			}else if(betaTilt < -threshold){
+			}else if(betaTilt < -30){
 				answer(4);
 			}
 		}
