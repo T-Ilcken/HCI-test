@@ -230,7 +230,7 @@
 		function handleTilt(event) {
 			
 			const now = Date.now();
-			if(now - lastAnswerTime < 300) return;
+			if(now - lastAnswerTime < 2000) return;
 			
 			
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
@@ -241,19 +241,15 @@
 			if (alphaTilt > 15){
 				lastAnswerTime = now;
 				answer(1);
-				answeredThisTilt = true;
 			}else if (alphaTilt < -15){
 				lastAnswerTime = now;
 				answer(2);
-				answeredThisTilt = true;
 			}else if(betaTilt > 15){
 				lastAnswerTime = now;
 				answer(3);
-				answeredThisTilt = true;
 			}else if(betaTilt < -15){
 				lastAnswerTime = now;
 				answer(4);
-				answeredThisTilt = true;
 			}
 	
 			
