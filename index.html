@@ -226,42 +226,58 @@
 		}
 		
 		function handleTilt(event) {
-			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
-			let betaTilt = event.beta - betaNeutral;
-	
-			if (alphaTilt > 15){
-				answer(1);
-			}else if (alphaTilt < -15){
-				answer(2);				
-			}else if(betaTilt > 15){
-				answer(3);
-			}else if(betaTilt < -15){
-				answer(4);
-			}else{
-				window.addEventListener("deviceorientation",handleTilt, {once : true});
+			if(waitingForNeutral){
 				return;
 			}
 			
-			waitUntilNeutral().then(() => {
-				window.addEventListener("deviceorientation",handleTilt, {once : true});
-			})
+			
+			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
+			let betaTilt = event.beta - betaNeutral;
+			
+			let answeredThisTilt = false
+	
+			if (alphaTilt > 15){
+				answer(1);
+				answeredThisTilt = true;
+			}else if (alphaTilt < -15){
+				answer(2);
+				answeredThisTilt = true;
+			}else if(betaTilt > 15){
+				answer(3);
+				answeredThisTilt = true;
+			}else if(betaTilt < -15){
+				answer(4);
+				answeredThisTilt = true;
+			}
+			
+			if(answeredThisTilt){
+				waitingForNeutral = true;
+				waitUntilNeutral().then(() => {
+					waitingForNeutral = false;
+					window.addEventListener("deviceorientation", handleTilt, {once: true});
+				});
+			}else{
+				window.addEventListener("deviceorientation",handleTilt,{once : true})
+			}
 			
 		}
-		
-		function waitUntilNeutral(){
+		function waitUntilNeutral() {
 			return new Promise(resolve => {
-			function checkNeutral(e) {
-				let a = ((e.alpha - alphaNeutral + 540) % 360) - 180;
-				let b = e.beta - betaNeutral;
+				function checkNeutral(e) {
+					let a = ((e.alpha - alphaNeutral + 540) % 360) - 180;
+					let b = e.beta - betaNeutral;
 
-				if (Math.abs(a) < 10 && Math.abs(b) < 10) {  // neutral zone
-					window.removeEventListener("deviceorientation", checkNeutral);
-					resolve();
+					if (Math.abs(a) < 10 && Math.abs(b) < 10) { 
+						window.removeEventListener("deviceorientation", checkNeutral);
+						resolve();
+					}
 				}
-			}
-			window.addEventListener("deviceorientation", checkNeutral);
-		});
-	}
+				window.addEventListener("deviceorientation", checkNeutral);
+			});
+		}
+			
+		
+	
 		
 		
 	</script>
