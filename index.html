@@ -161,15 +161,14 @@
 			document.getElementById("modeSelect").style.display = "none";
 			document.getElementById("startButton").style.display = "none";
 			document.getElementById("game").style.display = "block";
-			startTimer();
-			newQuestion();
 			if(mode == "tilt"){
 				document.getElementById("ans1").onclick = null;
 				document.getElementById("ans2").onclick = null;
 				document.getElementById("ans3").onclick = null;
 				document.getElementById("ans4").onclick = null;
-				window.addEventListener("deviceorientation",handleTilt);
 			}
+			startTimer();
+			newQuestion();
 		}
 		
 		function startTimer(){
@@ -201,8 +200,11 @@
 			document.getElementById('ans2').innerText = answers[1];
 			document.getElementById('ans3').innerText = answers[2];
 			document.getElementById('ans4').innerText = answers[3];
-
-}
+			
+			if(mode == "tilt"){
+				window.addEventListener("deviceorientation",handleTilt)
+			}
+		}
 		
 		function answer(button) {
 
@@ -237,12 +239,20 @@
 	
 			if (alphaTilt > 45){
 				answer(1);
+				answered = true
+				window.removeEventListener("deviceorientation",handleTilt)
 			}else if (alphaTilt < -45){
 				answer(2);
+				answered = true
+				window.removeEventListener("deviceorientation",handleTilt)
 			}else if(betaTilt > 45){
 				answer(3);
+				answered = true
+				window.removeEventListener("deviceorientation",handleTilt)
 			}else if(betaTilt < -45){
 				answer(4);
+				answered = true
+				window.removeEventListener("deviceorientation",handleTilt)
 			}
 			
 			setTimeout(() => answered = false, 500);
