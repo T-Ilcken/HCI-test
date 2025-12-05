@@ -238,7 +238,7 @@
 			} else{
 				return;
 			}
-			let alphaTilt = event.alpha;
+			let alphaTilt = event.alpha - alphaNeutral;
 			let betaTilt = event.beta - betaNeutral;
 			if(alphaTilt > 30 && alphaTilt < 120){
 				answer(1);
