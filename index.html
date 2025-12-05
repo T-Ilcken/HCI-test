@@ -40,13 +40,15 @@
 			position: relative;
 		}
 
+/* Container for the four answer buttons */
 		#answers {
-			position: relative;
-			width: 400px;
-			height: 400px;
+			 position: relative;
+			width: 400px;   
+			height: 400px;     
 			margin-top: 20px;
 		}
 
+/* Shared button styles */
 		.answerButton {
 			position: absolute;
 			width: 120px;
@@ -62,10 +64,33 @@
 			user-select: none;
 		}
 
-		#ans3 { top: 0; left: 50%; transform: translateX(-50%); }
-		#ans1 { right: 0; top: 50%; transform: translateY(-50%); }
-		#ans4 { bottom: 0; left: 50%; transform: translateX(-50%); }
-		#ans2 { left: 0; top: 50%; transform: translateY(-50%); }
+/* Top button */
+		#ans3 {
+			top: 0;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+/* Right button */
+		#ans1 {
+			right: 0;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+/* Bottom button */
+		#ans4 {
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+/* Left button */
+		#ans2 {
+			left: 0;
+			top: 50%;
+			transform: translateY(-50%);
+		}
 	</style>
 </head>
 <body>
@@ -119,13 +144,12 @@
 		}
 		
 		function selectCalibration(){
-			window.addEventListener("deviceorientation",calibrate);
+			window.addEventListener("deviceorientation",calibrate, {once : true});
 		}
 		
 		function calibrate(event){
 			betaNeutral = event.beta;
 			alphaNeutral = event.alpha;
-			window.removeEventListener("deviceorientation",calibrate);
 		}
 		
 		function startGame(){
@@ -160,6 +184,7 @@
 		}
 		
 		function newQuestion() {
+			// Prepare a new question
 			let a = Math.floor(Math.random() * 10) + 1;
 			let b = Math.floor(Math.random() * 10) + 1;
 			correctAnswer = a + b;
@@ -167,27 +192,32 @@
 			let wrong2 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
 			let wrong3 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
 			let answers = [correctAnswer, wrong1, wrong2, wrong3];
-			answers = answers.sort(() => Math.random() - 0.5);
+			answers = answers.sort(function(){return Math.random() - 0.5});
 
 			document.getElementById("question").innerText = `${a} + ${b}`;
 			document.getElementById('ans1').innerText = answers[0];
 			document.getElementById('ans2').innerText = answers[1];
 			document.getElementById('ans3').innerText = answers[2];
 			document.getElementById('ans4').innerText = answers[3];
-
-			answered = false;
-
+			
 			if(mode == "tilt"){
-				window.addEventListener("deviceorientation", handleTilt);
+				window.addEventListener("deviceorientation",handleTilt,{ once: true })
 			}
 		}
-
+		
 		function answer(button) {
+
 			let chosen = document.getElementById("ans" + button).innerText;
-			if (parseInt(chosen) == correctAnswer) score++;
-			else score--;
+			if (parseInt(chosen) == correctAnswer){
+				score++;
+			}
+			else{
+				score--;
+			} 
 			
 			document.getElementById("score").innerText = score;
+
+			// generate next question after a short delay
 			setTimeout(newQuestion, 100);
 		}
 		
@@ -197,51 +227,50 @@
 			document.getElementById("result").innerHTML = `<p>Time is up! Your Score: ${score}</p>`;
 			window.removeEventListener("deviceorientation",handleTilt);
 		}
-
-		/* ------------------------------
-			WAIT FOR NEUTRAL FUNCTION
-		-------------------------------- */
-		function waitForNeutral() {
-			return new Promise(resolve => {
-				function checkNeutral(e) {
-					let a = ((e.alpha - alphaNeutral + 540) % 360) - 180;
-					let b = e.beta - betaNeutral;
-
-					if (Math.abs(a) < 10 && Math.abs(b) < 10) {
-						window.removeEventListener("deviceorientation", checkNeutral);
-						resolve();
-					}
-				}
-
-				window.addEventListener("deviceorientation", checkNeutral);
-			});
-		}
-
-		/* ------------------------------
-			TILT HANDLER
-		-------------------------------- */
-		async function handleTilt(event) {
-			if (answered) return;
-
-			let alphaTilt = ((event.alpha - alphaNeutral + 540) % 360) - 180;
-			let betaTilt = event.beta - betaNeutral;
-
-			let selected = 0;
-
-			if (alphaTilt > 15) selected = 1;
-			else if (alphaTilt < -15) selected = 2;
-			else if (betaTilt > 15) selected = 3;
-			else if (betaTilt < -15) selected = 4;
-
-			if (!selected) return;
-
+		
+		function handleTilt(event) {
+			if(answered){
+				return;
+			}
 			answered = true;
-			window.removeEventListener("deviceorientation", handleTilt);
-			answer(selected);
-
-			// 🔥 wait until the phone is neutral again
-			await waitForNeutral();
+			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
+			let betaTilt = event.beta - betaNeutral;
+	
+			if (alphaTilt > 15){
+				answer(1);
+			}else if (alphaTilt < -15){
+				answer(2);				
+			}else if(betaTilt > 15){
+				answer(3);
+			}else if(betaTilt < -15){
+				answer(4);
+			}else{
+				window.addEventListener("deviceorientation",handleTilt, {once : true});
+				return;
+			}
+			
+			waitUntilNeutral().then(() => {
+				window.addEventListener("deviceorientation",handleTilt, {once : true});
+			})
+			
 		}
+		
+		function waitUntilNeutral(){
+			return new Promise(resolve => {
+			function checkNeutral(e) {
+				let a = ((e.alpha - alphaNeutral + 540) % 360) - 180;
+				let b = e.beta - betaNeutral;
+
+				if (Math.abs(a) < 10 && Math.abs(b) < 10) {  // neutral zone
+					window.removeEventListener("deviceorientation", checkNeutral);
+					resolve();
+				}
+			}
+			window.addEventListener("deviceorientation", checkNeutral);
+		});
+	}
+		
+		
 	</script>
 </body>
 </html>
