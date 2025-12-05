@@ -202,13 +202,9 @@
 			document.getElementById('ans3').innerText = answers[2];
 			document.getElementById('ans4').innerText = answers[3];
 
-			// unlock answering after a tiny delay so UI is ready
-			setTimeout(() => { answered = false; }, 50);
 }
 		
 		function answer(button) {
-			if (answered) return; // ignore if already answered
-			answered = true;       // lock immediately
 
 			let chosen = document.getElementById("ans" + button).innerText;
 			if (parseInt(chosen) == correctAnswer){
@@ -232,24 +228,24 @@
 		}
 		
 		function handleTilt(event) {
-			if (answered) return; // ignore tilt if question already answered
-
+			if(answered){
+				return
+			}
+			answered = true
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
 	
 			if (alphaTilt > 30){
-				answered = true;
 				answer(1);
 			}else if (alphaTilt < -30){
-				answered = true;
 				answer(2);
 			}else if(betaTilt > 30){
-				answered = true;
 				answer(3);
 			}else if(betaTilt < -30){
-				answered = true;
 				answer(4);
 			}
+			
+			setTimeout(() => answered = false, 250);
 		}
 		
 	</script>
