@@ -97,9 +97,19 @@
 	<div id="container">
 		<h2>Math Quiz</h2>
 		<div id="modeSelect">
-			<p>Select mode:</p>
+			<p>Select control mode:</p>
 			<button onclick = "selectMode('click')">Click Mode</button>
 			<button onclick = "selectMode('tilt')">Tilt Mode</button>
+		</div>
+		<div id = "difficultySelect">
+			<p>Select difficulty Level:</p>
+			<button>1</button>
+			<button>2</button>
+			<button>3</button>
+		</div>
+		<div id = "calibration">
+			<p>calibrate your devices sensors:</p>
+			<button onclick = "">calibrate</button>
 		</div>
 		<button id = "startButton" style = "display:none;" onclick = "startGame()">Start Game</button>
 		
@@ -126,10 +136,22 @@
 		let tiltAnswered = false;
 		let interval;
 		let answered = false;
+		let betaNeutral = 0;
+		let gammaNeutral = 0;
 		
 		function selectMode(m){
 			mode = m;
 			document.getElementById("startButton").style.display = "Block";
+		}
+		
+		function selectCalibration(){
+			window.addEventListener("deviceorientation",calibrate);
+		}
+		
+		function calibrate(event){
+			betaNeutral = event.beta;
+			gammaNeutral = event.gamma;
+			window.removeEventListener("deviceorientation",calibrate);
 		}
 		
 		function startGame(){
@@ -143,6 +165,10 @@
 			startTimer();
 			newQuestion();
 			if(mode == "tilt"){
+				document.getElementById("ans1").onclick = "none";
+				document.getElementById("ans2").onclick = "none";
+				document.getElementById("ans3").onclick = "none";
+				document.getElementById("ans4").onclick = "none";
 				window.addEventListener("deviceorientation",handleTilt);
 			}
 		}
@@ -212,15 +238,15 @@
 			} else{
 				return;
 			}
-			let gamma = event.gamma
-			let beta = event.beta
-			if(gamma > 30){
+			let gammaTilt = event.gamma - gammaNeutral;
+			let betaTilt = event.beta - betaNeutral;
+			if(gammaTilt > 30){
 				answer(1);
-			}else if(gamma < -30){
+			}else if(gammaTilt < -30){
 				answer(2);
-			}else if(beta > 30){
+			}else if(betaTilt > 30){
 				answer(3);
-			}else if(beta < -30){
+			}else if(betaTilt < -30){
 				answer(4);
 			}
 		}
