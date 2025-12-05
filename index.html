@@ -237,10 +237,19 @@
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
 	
-			if (alphaTilt > 30) answer(1);
-			else if (alphaTilt < -30) answer(2);
-			else if (betaTilt > 30) answer(3);
-			else if (betaTilt < -30) answer(4);
+			if (alphaTilt > 30){
+				answered = true;
+				answer(1);
+			}else if (alphaTilt < -30){
+				answered = true;
+				asnwer(2);
+			}else if(betaTilt > 30){
+				answered = true;
+				answer(3);
+			}else if(betaTilt < -30){
+				answered = true;
+				asnwer(4);
+			}
 		}
 		
 	</script>
