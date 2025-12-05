@@ -238,11 +238,11 @@
 			} else{
 				return;
 			}
-			let alphaTilt = event.alpha - alphaNeutral;
+			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
-			if(alphaTilt > 30 && alphaTilt < 120){
+			if(alphaTilt > 30){
 				answer(1);
-			}else if(alphaTilt < 330 && alphaTilt > 240){
+			}else if(alphaTilt < -30){
 				answer(2);
 			}else if(betaTilt > 30){
 				answer(3);
