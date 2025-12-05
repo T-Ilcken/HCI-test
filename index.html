@@ -137,7 +137,7 @@
 		let interval;
 		let answered = false;
 		let betaNeutral = 0;
-		let gammaNeutral = 0;
+		let alphaNeutral = 0;
 		
 		function selectMode(m){
 			mode = m;
@@ -150,7 +150,7 @@
 		
 		function calibrate(event){
 			betaNeutral = event.beta;
-			gammaNeutral = event.gamma;
+			alphaNeutral = event.alpha;
 			window.removeEventListener("deviceorientation",calibrate);
 		}
 		
@@ -238,11 +238,11 @@
 			} else{
 				return;
 			}
-			let gammaTilt = event.gamma - gammaNeutral;
+			let alphaTilt = event.alpha - alphaNeutral;
 			let betaTilt = event.beta - betaNeutral;
-			if(gammaTilt > 30){
+			if(alphaTilt > 30){
 				answer(1);
-			}else if(gammaTilt < -30){
+			}else if(alphaTilt < -30){
 				answer(2);
 			}else if(betaTilt > 30){
 				answer(3);
@@ -254,3 +254,4 @@
 	</script>
 </body>
 </html>
+
