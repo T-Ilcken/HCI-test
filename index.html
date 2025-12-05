@@ -166,10 +166,10 @@
 			startTimer();
 			newQuestion();
 			if(mode == "tilt"){
-				document.getElementById("ans1").onclick = "none";
-				document.getElementById("ans2").onclick = "none";
-				document.getElementById("ans3").onclick = "none";
-				document.getElementById("ans4").onclick = "none";
+				document.getElementById("ans1").onclick = null;
+				document.getElementById("ans2").onclick = null;
+				document.getElementById("ans3").onclick = null;
+				document.getElementById("ans4").onclick = null;
 				window.addEventListener("deviceorientation",handleTilt);
 			}
 		}
@@ -255,4 +255,3 @@
 	</script>
 </body>
 </html>
-
