@@ -133,7 +133,6 @@
 		let timer = 60;
 		let score = 0;
 		let correctAnswer = 0;
-		let tiltAnswered = false;
 		let interval;
 		let answered = false;
 		let betaNeutral = 0;
@@ -186,39 +185,43 @@
 			}
 		}
 		
-		function newQuestion(){
-			answered = false;
+		function newQuestion() {
+			// Prepare a new question
 			let a = Math.floor(Math.random() * 10) + 1;
 			let b = Math.floor(Math.random() * 10) + 1;
-			let question = `${a} + ${b}`;
 			correctAnswer = a + b;
 			let wrong1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
 			let wrong2 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
 			let wrong3 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-			let answers = [correctAnswer,wrong1,wrong2,wrong3];
+			let answers = [correctAnswer, wrong1, wrong2, wrong3];
 			answers = answers.sort(function(){return Math.random() - 0.5});
-			correctIndex = answers.indexOf(correctAnswer) + 1;
-			document.getElementById("question").innerText = question;
+
+			document.getElementById("question").innerText = `${a} + ${b}`;
 			document.getElementById('ans1').innerText = answers[0];
 			document.getElementById('ans2').innerText = answers[1];
 			document.getElementById('ans3').innerText = answers[2];
 			document.getElementById('ans4').innerText = answers[3];
-		}
+
+			// unlock answering after a tiny delay so UI is ready
+			setTimeout(() => { answered = false; }, 50);
+}
 		
-		function answer(button){
-			if(answered){
-				return;
-			}
-			answered = true;
+		function answer(button) {
+			if (answered) return; // ignore if already answered
+			answered = true;       // lock immediately
+
 			let chosen = document.getElementById("ans" + button).innerText;
-			if(parseInt(chosen) == correctAnswer){
+			if (parseInt(chosen) == correctAnswer){
 				score++;
-				document.getElementById("score").innerText = score;
-			}else{
-				score--;
-				document.getElementById("score").innerText = score;
 			}
-			newQuestion();
+			else{
+				score--;
+			} 
+			
+			document.getElementById("score").innerText = score;
+
+			// generate next question after a short delay
+			setTimeout(newQuestion, 100);
 		}
 		
 		function endGame(){
@@ -228,27 +231,16 @@
 			window.removeEventListener("deviceorientation",handleTilt);
 		}
 		
-		function handleTilt(event){
-			if(answered){
-				return;
-			}
-			if(!tiltAnswered){
-				tiltAnswered = true;
-				setTimeout(function(){tiltAnswered = false},200);
-			} else{
-				return;
-			}
+		function handleTilt(event) {
+			if (answered) return; // ignore tilt if question already answered
+
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
-			if(alphaTilt > 30){
-				answer(1);
-			}else if(alphaTilt < -30){
-				answer(2);
-			}else if(betaTilt > 30){
-				answer(3);
-			}else if(betaTilt < -30){
-				answer(4);
-			}
+	
+			if (alphaTilt > 30) answer(1);
+			else if (alphaTilt < -30) answer(2);
+			else if (betaTilt > 30) answer(3);
+			else if (betaTilt < -30) answer(4);
 		}
 		
 	</script>
