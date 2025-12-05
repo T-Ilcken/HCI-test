@@ -1,172 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang ="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Math Challenge</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      background: #f2f2f2;
-    }
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Math Quiz</title>
+	<style>
+		body {
+			margin: 0;
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: #111;
+			color: white;
+			font-family: sans-serif;
+		}	
+		
+		#container {
+			background: #1e1e1e;
+			padding: 18px 22px;
+			border-radius: 16px;
+			box-shadow: 0 0 18px rgba(0, 0, 0, 0.35);
+			border: 1px solid rgba(255, 255, 255, 0.12);
 
-    #container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
-      text-align: center;
-    }
+			width: 75vw;
+			max-width: 600px;
 
-    button {
-      padding: 10px 20px;
-      margin: 10px 0;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      background: #3498db;
-      color: white;
-    }
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
 
-    .answer-btn {
-      width: 100%;
-      background: #2ecc71;
-    }
+		}
+		
+		#question {
+			font-size: 2.2rem;
+			margin: 20px 0;
+			z-index: 99;
+			position: relative;
+		}
 
-    #question {
-      font-size: 24px;
-      margin: 20px 0;
-    }
-  </style>
+/* Container for the four answer buttons */
+		#answers {
+			 position: relative;
+			width: 400px;   
+			height: 400px;     
+			margin-top: 20px;
+		}
+
+/* Shared button styles */
+		.answerButton {
+			position: absolute;
+			width: 120px;
+			height: 120px;
+			border-radius: 20px;
+			font-size: 2rem;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: #444;
+			color: white;
+			border: 3px solid white;
+			user-select: none;
+		}
+
+/* Top button */
+		#ans3 {
+			top: 0;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+/* Right button */
+		#ans1 {
+			right: 0;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+/* Bottom button */
+		#ans4 {
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+/* Left button */
+		#ans2 {
+			left: 0;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	</style>
 </head>
 <body>
-  <div id="container">
-    <h2>Math Challenge</h2>
-
-    <div id="modeSelect">
-      <p>Select mode:</p>
-      <button onclick="selectMode('click')">Click Mode</button>
-      <button onclick="selectMode('tilt')">Tilt Mode</button>
-    </div>
-
-    <button id="startBtn" style="display:none;" onclick="startGame()">Start</button>
-
-    <div id="game" style="display:none;">
-      <p>Time left: <span id="timer">60</span>s</p>
-      <p>Score: <span id="score">0</span></p>
-      <div id="question""></div>
-      <button class="answer-btn" id="ans1" onclick="answer(1)"></button>
-      <button class="answer-btn" id="ans2" onclick="answer(2)"></button>
-	  <button class="answer-btn" id="ans3" onclick="answer(3)"></button>
-      <button class="answer-btn" id="ans4" onclick="answer(4)"></button>
-    </div>
-
-    <div id="result" style="display:none;"></div>
-  </div>
-
-  <script>
-    let mode = null;
-    let timer = 60;
-    let score = 0;
-    let correctAnswer = 0;
-    let tiltActive = false;
-
-    function selectMode(m) {
-      mode = m;
-      document.getElementById('startBtn').style.display = 'block';
-    }
-
-    function startGame() {
-      score = 0;
-      timer = 60;
-      document.getElementById('score').innerText = score;
-      document.getElementById('modeSelect').style.display = 'none';
-      document.getElementById('startBtn').style.display = 'none';
-      document.getElementById('game').style.display = 'block';
-      startTimer();
-      newQuestion();
-
-      if (mode === 'tilt') {
-        window.addEventListener('deviceorientation', handleTilt);
-      }
-    }
-
-    function startTimer() {
-      const interval = setInterval(() => {
-        timer--;
-        document.getElementById('timer').innerText = timer;
-        if (timer <= 0) {
-          clearInterval(interval);
-          endGame();
-        }
-      }, 1000);
-    }
-
-    function newQuestion() {
-      let a = Math.floor(Math.random() * 10) + 1;
-      let b = Math.floor(Math.random() * 10) + 1;
-      const question = `${a} + ${b}`;
-      correctAnswer = a + b;
-
-      let wrong1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-	  let wrong2 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-	  let wrong3 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-	  
-	  let answers = [correctAnswer,wrong1,wrong2,wrong3]
-	  answers = answers.sort(function(){return Math.random() - 0.5})
-	  correctIndex = answers.indexOf(correctAnswer) + 1;
-
-      document.getElementById('question').innerText = question;
-      document.getElementById('ans1').innerText = answers[0]
-      document.getElementById('ans2').innerText = answers[1]
-	  document.getElementById('ans3').innerText = answers[2]
-      document.getElementById('ans4').innerText = answers[3]
-    }
-
-    function answer(btn) {
-      const chosen = document.getElementById('ans' + btn).innerText;
-      if (parseInt(chosen) === correctAnswer) {
-        score++;
-        document.getElementById('score').innerText = score;
-      }
-      newQuestion();
-    }
-
-    function handleTilt(event) {
-      if (!tiltActive) {
-        tiltActive = true;
-        setTimeout(() => tiltActive = false, 200);
-      } else {
-        return;
-      }
-
-      if (event.gamma > 15) {
-        answer(1);
-      } else if (event.gamma < -15) {
-        answer(2);
-      } else if (event.beta > 15) {
-		answer(3)
-	  } else if (event.beta < -15) {
-		answer(4)
-	  }
-    }
-
-    function endGame() {
-      document.getElementById('game').style.display = 'none';
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('result').innerHTML = `<h3>Time's up!</h3><p>Your score: ${score}</p>`;
-
-      window.removeEventListener('deviceorientation', handleTilt);
-    }
-  </script>
+	<div id="container">
+		<h2>Math Quiz</h2>
+		<div id="modeSelect">
+			<p>Select mode:</p>
+			<button onclick = "selectMode('click')">Click Mode</button>
+			<button onclick = "selectMode('tilt')">Tilt Mode</button>
+		</div>
+		<button id = "startButton" style = "display:none;" onclick = "startGame()">Start Game</button>
+		
+		<div id="game" style = "display:none">
+			<p>Time left: <span id = "timer">60</span>s</p>
+			<p>Score: <span id = "score">0</span></p>
+			<div id = "question"></div>
+			<div id = "answers">
+				<button class = "answerButton" id = "ans1" onclick = "answer(1)"></button>
+				<button class = "answerButton" id = "ans2" onclick = "answer(2)"></button>
+				<button class = "answerButton" id = "ans3" onclick = "answer(3)"></button>
+				<button class = "answerButton" id = "ans4" onclick = "answer(4)"></button>
+			</div>
+		</div>
+		
+		<div id = "result" style = "display:none"></div>
+	</div>
+	
+	<script>
+		let mode = null;
+		let timer = 60;
+		let score = 0;
+		let correctAnswer = 0;
+		let tiltAnswered = false;
+		let interval;
+		
+		function selectMode(m){
+			mode = m;
+			document.getElementById("startButton").style.display = "Block";
+		}
+		
+		function startGame(){
+			score = 0;
+			timer = 60;
+			document.getElementById("score").innerText = score;
+			document.getElementById("timer").innerText = timer;
+			document.getElementById("modeSelect").style.display = "none";
+			document.getElementById("startButton").style.display = "none";
+			document.getElementById("game").style.display = "block";
+			startTimer();
+			newQuestion();
+			if(mode == "tilt"){
+				window.addEventListener("deviceorientation",handleTilt);
+			}
+		}
+		
+		function startTimer(){
+			interval = setInterval(tick,1000);
+		}
+		
+		function tick(){
+			timer--;
+			document.getElementById("timer").innerText = timer;
+			if(timer < 0){
+				clearInterval(interval);
+				endGame();
+			}
+		}
+		
+		function newQuestion(){
+			let a = Math.floor(Math.random() * 10) + 1;
+			let b = Math.floor(Math.random() * 10) + 1;
+			let question = `${a} + ${b}`;
+			correctAnswer = a + b;
+			let wrong1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
+			let wrong2 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
+			let wrong3 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
+			let answers = [correctAnswer,wrong1,wrong2,wrong3];
+			answers = answers.sort(function(){return Math.random() - 0.5});
+			correctIndex = answers.indexOf(correctAnswer) + 1;
+			document.getElementById("question").innerText = question;
+			document.getElementById('ans1').innerText = answers[0];
+			document.getElementById('ans2').innerText = answers[1];
+			document.getElementById('ans3').innerText = answers[2];
+			document.getElementById('ans4').innerText = answers[3];
+		}
+		
+		function answer(button){
+			let chosen = document.getElementById("ans" + button).innerText;
+			if(parseInt(chosen) == correctAnswer){
+				score++;
+				document.getElementById("score").innerText = score;
+			}
+			newQuestion();
+		}
+		
+		function endGame(){
+			document.getElementById("game").style.display = "none";
+			document.getElementById("result").style.display = "block";
+			document.getElementById("result").innerHTML = `<p>Time is up! Your Score: ${score}</p>`;
+			window.removeEventListener("deviceorientation",handleTilt);
+		}
+		
+		function handleTilt(event){
+			if(!tiltAnswered){
+				tiltAnswered = true;
+				setTimeout(function(){tiltAnswered = false},200);
+			} else{
+				return;
+			}
+			let gamma = event.gamma
+			let beta = event.beta
+			if(gamma > 15){
+				answer(1);
+			}else if(gamma < -15){
+				answer(2);
+			}else if(beta > 15){
+				answer(3);
+			}else if(beta < -15){
+				answer(4);
+			}
+		}
+		
+	</script>
 </body>
 </html>
+
 
 
 
