@@ -237,19 +237,19 @@
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
 	
-			if (alphaTilt > 30){
+			if (alphaTilt > 15){
 				answer(1);
 				answered = true
 				window.removeEventListener("deviceorientation",handleTilt)
-			}else if (alphaTilt < -30){
+			}else if (alphaTilt < -15){
 				answer(2);
 				answered = true
 				window.removeEventListener("deviceorientation",handleTilt)
-			}else if(betaTilt > 30){
+			}else if(betaTilt > 15){
 				answer(3);
 				answered = true
 				window.removeEventListener("deviceorientation",handleTilt)
-			}else if(betaTilt < -30){
+			}else if(betaTilt < -15){
 				answer(4);
 				answered = true
 				window.removeEventListener("deviceorientation",handleTilt)
