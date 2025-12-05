@@ -212,7 +212,7 @@
 				score--;
 			} 
 			
-			document.getElementById("score").innerText = score;
+			document.getElementById("score").innerText = parseInt(chosen);
 
 			// generate next question after a short delay
 			newQuestion();
@@ -222,6 +222,8 @@
 			if(!questionReady || waitingForNeutral){
 				return;
 			}
+			
+			questionReady = false;
 		
 			let alpha = lastEvent.alpha;
 			
@@ -236,9 +238,10 @@
 			}
 			
 			if (selected_button != null){
-				questionReady = false;
 				waitingForNeutral = true;
 				answer(selected_button);
+			}else{
+				questionReady = true;
 			}
 			
 			if(waitingForNeutral){
