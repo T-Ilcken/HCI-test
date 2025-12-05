@@ -136,7 +136,11 @@
 		let interval;
 		let betaNeutral = 0;
 		let alphaNeutral = 0;
-		let lastAnswerTime = 0;
+		let lastEvent = {alpha: 0, beta: 0};
+		let poll_interval;
+		let waitingForNeutral = false;
+		let questionReady = false;
+		let checkNeutralInterval;
 		
 		function selectMode(m){
 			mode = m;
@@ -144,12 +148,13 @@
 		}
 		
 		function selectCalibration(){
-			window.addEventListener("deviceorientation",calibrate, {once : true});
+			window.addEventListener("deviceorientation",calibrate);
 		}
 		
 		function calibrate(event){
 			betaNeutral = event.beta;
 			alphaNeutral = event.alpha;
+			window.removeEventListener("deviceorientation",calibrate);
 		}
 		
 		function startGame(){
@@ -165,7 +170,11 @@
 				document.getElementById("ans2").onclick = null;
 				document.getElementById("ans3").onclick = null;
 				document.getElementById("ans4").onclick = null;
-				window.addEventListener("deviceorientation",handleTilt);
+				window.addEventListener("deviceorientation", (event) => {
+					lastEvent.alpha = event.alpha;
+					lastEvent.beta = event.beta;
+				});
+				poll_interval = setInterval(tilt_answer,50);
 			}
 			startTimer();
 			newQuestion();
@@ -200,6 +209,7 @@
 			document.getElementById('ans2').innerText = answers[1];
 			document.getElementById('ans3').innerText = answers[2];
 			document.getElementById('ans4').innerText = answers[3];
+			let questionReady = true;
 		}
 		
 		function answer(button) {
@@ -214,7 +224,55 @@
 			
 			document.getElementById("score").innerText = score;
 
+			// generate next question after a short delay
 			newQuestion();
+		}
+		
+		function tilt_answer() {
+			if(!questionReady && waitingForNeutral){
+				return;
+			}
+		
+			let alpha = lastEvent.alpha;
+			let beta = lastEvent.beta;
+			
+			let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
+			let betaTilt = beta - betaNeutral;
+			
+			let selected_button = null;
+			
+			if (alphaTilt >= 30){
+				selected_button = 1;
+			}else if (alphaTilt <= -30){
+				selected_button = 2;
+			}else if(betaTilt >= 30){
+				selected_button = 3;
+			}else if(betaTilt <= -30){
+				selected_button = 4;
+			}
+			
+			if (selected_button != null){
+				questionReady = false;
+				waitingForNeutral = true;
+				answer(selected_button);
+			}
+			
+			if(waitingForNeutral){
+				checkNeutralInterval = setInterval(checkNeutral,50);
+			}
+		}
+		
+		function checkNeutral(){
+			let alpha = lastEvent.alpha;
+			let beta = lastEvent.beta;
+			
+			let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
+			let betaTilt = beta - betaNeutral;
+			
+			if(alphaTilt > alphaNeutral - 10 && alphaTilt < alphaNeutral + 10 && betaTilt > betaNeutral + 10 && betaTilt < betaNeutral - 10){
+				clearInterval(checkNeutralInterval);
+				waitingForNeutral = false;
+			}
 		}
 		
 		function endGame(){
@@ -222,29 +280,9 @@
 			document.getElementById("result").style.display = "block";
 			document.getElementById("result").innerHTML = `<p>Time is up! Your Score: ${score}</p>`;
 			window.removeEventListener("deviceorientation",handleTilt);
-		}
-		
-		function handleTilt(event) {
-			
-			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
-			let betaTilt = event.beta - betaNeutral;
-	
-			if (alphaTilt >= 30){
-				answer(1);
-			}else if (alphaTilt <= -30){
-				answer(2);
-			}else if(betaTilt >= 30){
-				answer(3);
-			}else if(betaTilt <= -30){
-				answer(4);
-			}
-	
-			
+			clearInterval(poll_interval);
 		}
 		
 	</script>
 </body>
 </html>
-
-
-
