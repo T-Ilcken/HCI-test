@@ -206,13 +206,13 @@
 
 			let chosen = document.getElementById("ans" + button).innerText;
 			if (parseInt(chosen) == correctAnswer){
-				score++;
+				score--;
 			}
 			else{
-				score--;
+				score++;
 			} 
 			
-			document.getElementById("score").innerText = parseInt(chosen);
+			document.getElementById("score").innerText = parseInt(score);
 
 			// generate next question after a short delay
 			newQuestion();
@@ -228,7 +228,6 @@
 			let alpha = lastEvent.alpha;
 			
 			let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
-			alert(alphaTilt);
 			
 			let selected_button = null;
 			
