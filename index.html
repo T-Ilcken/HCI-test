@@ -138,6 +138,7 @@
 		let answered = false;
 		let betaNeutral = 0;
 		let alphaNeutral = 0;
+		let threshold = 20
 		
 		function selectMode(m){
 			mode = m;
@@ -234,19 +235,19 @@
 			}
 			if(!tiltAnswered){
 				tiltAnswered = true;
-				setTimeout(function(){tiltAnswered = false},200);
+				setTimeout(function(){tiltAnswered = false},500);
 			} else{
 				return;
 			}
 			let alphaTilt = event.alpha;
 			let betaTilt = event.beta - betaNeutral;
-			if(alphaTilt > 30 && alphaTilt < 120){
+			if(alphaTilt > treshold && alphaTilt < 90 + treshold){
 				answer(1);
-			}else if(alphaTilt < 330 && alphaTilt > 240){
+			}else if(alphaTilt < 360 - treshold && alphaTilt > 270 - treshold){
 				answer(2);
-			}else if(betaTilt > 30){
+			}else if(betaTilt > treshold){
 				answer(3);
-			}else if(betaTilt < -30){
+			}else if(betaTilt < -treshold){
 				answer(4);
 			}
 		}
@@ -254,6 +255,7 @@
 	</script>
 </body>
 </html>
+
 
 
 
