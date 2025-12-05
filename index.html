@@ -138,6 +138,7 @@
 		let betaNeutral = 0;
 		let alphaNeutral = 0;
 		let waitingForNeutral = false;
+		let lastAnswerTime = 0;
 		
 		function selectMode(m){
 			mode = m;
@@ -166,7 +167,7 @@
 				document.getElementById("ans2").onclick = null;
 				document.getElementById("ans3").onclick = null;
 				document.getElementById("ans4").onclick = null;
-				window.addEventListener("deviceorientation",handleTilt,{ once: true });
+				window.addEventListener("deviceorientation",handleTilt);
 			}
 			startTimer();
 			newQuestion();
@@ -227,9 +228,9 @@
 		}
 		
 		function handleTilt(event) {
-			if(waitingForNeutral){
-				return;
-			}
+			
+			const now = Date.now();
+			if(now - lastAnswerTime < 300) return;
 			
 			
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
@@ -238,48 +239,25 @@
 			let answeredThisTilt = false
 	
 			if (alphaTilt > 15){
+				lastAnswerTime = now;
 				answer(1);
 				answeredThisTilt = true;
 			}else if (alphaTilt < -15){
+				lastAnswerTime = now;
 				answer(2);
 				answeredThisTilt = true;
 			}else if(betaTilt > 15){
+				lastAnswerTime = now;
 				answer(3);
 				answeredThisTilt = true;
 			}else if(betaTilt < -15){
+				lastAnswerTime = now;
 				answer(4);
 				answeredThisTilt = true;
 			}
-			
-			if(answeredThisTilt){
-				waitingForNeutral = true;
-				waitUntilNeutral().then(() => {
-					waitingForNeutral = false;
-					window.addEventListener("deviceorientation", handleTilt, {once: true});
-				});
-			}else{
-				window.addEventListener("deviceorientation",handleTilt,{once : true})
-			}
-			
-		}
-		function waitUntilNeutral() {
-			return new Promise(resolve => {
-				function checkNeutral(e) {
-					let a = ((e.alpha - alphaNeutral + 540) % 360) - 180;
-					let b = e.beta - betaNeutral;
-
-					if (Math.abs(a) < 10 && Math.abs(b) < 10) { 
-						window.removeEventListener("deviceorientation", checkNeutral);
-						resolve();
-					}
-				}
-				window.addEventListener("deviceorientation", checkNeutral);
-			});
-		}
-			
-		
 	
-		
+			
+		}
 		
 	</script>
 </body>
