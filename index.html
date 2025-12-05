@@ -226,23 +226,16 @@
 		
 		function handleTilt(event) {
 			
-			const now = Date.now();
-			if(now - lastAnswerTime < 500) return;
-			
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
 	
 			if (alphaTilt >= 30){
-				lastAnswerTime = now;
 				answer(1);
 			}else if (alphaTilt <= -30){
-				lastAnswerTime = now;
 				answer(2);
 			}else if(betaTilt >= 30){
-				lastAnswerTime = now;
 				answer(3);
 			}else if(betaTilt <= -30){
-				lastAnswerTime = now;
 				answer(4);
 			}
 	
@@ -252,5 +245,6 @@
 	</script>
 </body>
 </html>
+
 
 
