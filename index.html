@@ -165,6 +165,7 @@
 				document.getElementById("ans2").onclick = null;
 				document.getElementById("ans3").onclick = null;
 				document.getElementById("ans4").onclick = null;
+				window.addEventListener("deviceorientation",handleTilt,{ once: true });
 			}
 			startTimer();
 			newQuestion();
@@ -199,10 +200,6 @@
 			document.getElementById('ans2').innerText = answers[1];
 			document.getElementById('ans3').innerText = answers[2];
 			document.getElementById('ans4').innerText = answers[3];
-			
-			if(mode == "tilt"){
-				window.addEventListener("deviceorientation",handleTilt,{ once: true })
-			}
 		}
 		
 		function answer(button) {
