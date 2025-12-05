@@ -229,10 +229,6 @@
 		}
 		
 		function handleTilt(event) {
-			if(answered){
-				return;
-			}
-			answered = true;
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
 	
