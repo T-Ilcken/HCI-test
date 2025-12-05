@@ -134,10 +134,8 @@
 		let score = 0;
 		let correctAnswer = 0;
 		let interval;
-		let answered = false;
 		let betaNeutral = 0;
 		let alphaNeutral = 0;
-		let waitingForNeutral = false;
 		let lastAnswerTime = 0;
 		
 		function selectMode(m){
@@ -216,8 +214,7 @@
 			
 			document.getElementById("score").innerText = score;
 
-			// generate next question after a short delay
-			setTimeout(newQuestion, 10000);
+			newQuestion();
 		}
 		
 		function endGame(){
@@ -230,24 +227,21 @@
 		function handleTilt(event) {
 			
 			const now = Date.now();
-			if(now - lastAnswerTime < 2000) return;
-			
+			if(now - lastAnswerTime < 500) return;
 			
 			let alphaTilt = (event.alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = event.beta - betaNeutral;
-			
-			let answeredThisTilt = false
 	
-			if (alphaTilt >= 90){
+			if (alphaTilt >= 30){
 				lastAnswerTime = now;
 				answer(1);
-			}else if (alphaTilt <= -90){
+			}else if (alphaTilt <= -30){
 				lastAnswerTime = now;
 				answer(2);
-			}else if(betaTilt >= 90){
+			}else if(betaTilt >= 30){
 				lastAnswerTime = now;
 				answer(3);
-			}else if(betaTilt <= -90){
+			}else if(betaTilt <= -30){
 				lastAnswerTime = now;
 				answer(4);
 			}
@@ -258,4 +252,5 @@
 	</script>
 </body>
 </html>
+
 
