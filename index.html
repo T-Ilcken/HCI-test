@@ -125,6 +125,7 @@
 		let correctAnswer = 0;
 		let tiltAnswered = false;
 		let interval;
+		let answered = false;
 		
 		function selectMode(m){
 			mode = m;
@@ -160,6 +161,7 @@
 		}
 		
 		function newQuestion(){
+			answered = false;
 			let a = Math.floor(Math.random() * 10) + 1;
 			let b = Math.floor(Math.random() * 10) + 1;
 			let question = `${a} + ${b}`;
@@ -178,9 +180,16 @@
 		}
 		
 		function answer(button){
+			if(answered){
+				return;
+			}
+			answered = true;
 			let chosen = document.getElementById("ans" + button).innerText;
 			if(parseInt(chosen) == correctAnswer){
 				score++;
+				document.getElementById("score").innerText = score;
+			}else{
+				score--;
 				document.getElementById("score").innerText = score;
 			}
 			newQuestion();
@@ -194,6 +203,9 @@
 		}
 		
 		function handleTilt(event){
+			if(answered){
+				return;
+			}
 			if(!tiltAnswered){
 				tiltAnswered = true;
 				setTimeout(function(){tiltAnswered = false},200);
