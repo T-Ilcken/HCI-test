@@ -238,16 +238,16 @@
 			
 			let answeredThisTilt = false
 	
-			if (alphaTilt > 15){
+			if (alphaTilt >= 90){
 				lastAnswerTime = now;
 				answer(1);
-			}else if (alphaTilt < -15){
+			}else if (alphaTilt <= -90){
 				lastAnswerTime = now;
 				answer(2);
-			}else if(betaTilt > 15){
+			}else if(betaTilt >= 90){
 				lastAnswerTime = now;
 				answer(3);
-			}else if(betaTilt < -15){
+			}else if(betaTilt <= -90){
 				lastAnswerTime = now;
 				answer(4);
 			}
