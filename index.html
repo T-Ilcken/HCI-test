@@ -206,10 +206,10 @@
 
 			let chosen = document.getElementById("ans" + button).innerText;
 			if (parseInt(chosen) == correctAnswer){
-				score--;
+				score++;
 			}
 			else{
-				score++;
+				score--;
 			} 
 			
 			document.getElementById("score").innerText = parseInt(score);
@@ -276,3 +276,4 @@
 	</script>
 </body>
 </html>
+
