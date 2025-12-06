@@ -247,7 +247,7 @@
 				selected_button = 1;
 			}else if(betaTilt >= 30){
 				selected_button = 3;
-			}else if (betaTilt <= 30){
+			}else if (betaTilt <= -30){
 				selectedButton = 4;
 			}
 			
@@ -265,8 +265,10 @@
 		
 		function checkNeutral(){
 			let alpha = lastEvent.alpha;
+			let beta = lastEvent.beta;
 			
 			let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
+			let betaTilt = beta - betaNeutral;
 			
 			if(Math.abs(alphaTilt) < 10){
 				clearInterval(checkNeutralInterval);
@@ -290,6 +292,7 @@
 	</script>
 </body>
 </html>
+
 
 
 
