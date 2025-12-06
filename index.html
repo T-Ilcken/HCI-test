@@ -270,7 +270,7 @@
 			let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
 			let betaTilt = beta - betaNeutral;
 			
-			if(Math.abs(alphaTilt) < 10){
+			if(Math.abs(alphaTilt) < 10 && Math.abs(betaTilt) < 10){
 				clearInterval(checkNeutralInterval);
 				waitingForNeutral = false;
 			}
@@ -292,6 +292,7 @@
 	</script>
 </body>
 </html>
+
 
 
 
