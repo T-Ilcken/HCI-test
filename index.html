@@ -163,6 +163,8 @@
 			document.getElementById("timer").innerText = timer;
 			document.getElementById("modeSelect").style.display = "none";
 			document.getElementById("startButton").style.display = "none";
+			document.getElementById("difficultySelect").style.display = "none":
+			document.getElementById("calibration").style.display = "none";
 			document.getElementById("game").style.display = "block";
 			if(mode == "tilt"){
 				document.getElementById("ans1").onclick = null;
@@ -231,7 +233,7 @@
 			
 			let selected_button = null;
 			
-			if (alphaTilt >= 30){
+			if (alphaTilt >= 15){
 				selected_button = 2;
 			}else if (alphaTilt <= -30){
 				selected_button = 1;
@@ -276,4 +278,5 @@
 	</script>
 </body>
 </html>
+
 
