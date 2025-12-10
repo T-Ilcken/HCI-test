@@ -217,6 +217,14 @@
 
 				this.#generateOptions();
 			}
+
+			checkOption(optionNumber){
+				return this.answerOptions[optionNumber] === this.correctAnswer;
+			}
+			
+			checkValue(value){
+				return this.correctAnswer === value;
+			}
 		}
 
 		function selectMode(m){
