@@ -142,7 +142,6 @@
 		let questionReady = false;
 		let checkNeutralInterval;
 		let listener;
-
 		
 		function randInt(min, max){ 
 			return Math.floor(Math.random() * ( max - min )) + min; 
@@ -162,7 +161,6 @@
 				this.secondValue = null;
 				this.correctAnswer = null;
 				this.answerOptions = new Array(Question.optionsAmount);
-				generateNewQuestion()
 			}
 
 			#generateOperator(){
@@ -225,7 +223,13 @@
 			checkValue(value){
 				return this.correctAnswer === value;
 			}
+
+			getString(){
+				return this.firstValue + " " + this.operator + " " + this.secondValue;
+			}
 		}
+		
+		let gameQuestion = new Question();
 
 		function selectMode(m){
 			mode = m;
@@ -277,34 +281,25 @@
 		
 		function newQuestion() {
 			// Prepare a new question
-			let a = Math.floor(Math.random() * 10) + 1;
-			let b = Math.floor(Math.random() * 10) + 1;
-			correctAnswer = a + b;
-			let wrong1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-			let wrong2 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-			let wrong3 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-			let answers = [correctAnswer, wrong1,wrong2, wrong3];
-			answers = answers.sort(function(){return Math.random() - 0.5});
+			gameQuestion.generateNewQuestion();
 
-			document.getElementById("question").innerText = `${a} + ${b}`;
-			document.getElementById('ans1').innerText = answers[0];
-			document.getElementById('ans2').innerText = answers[1];
-			document.getElementById('ans3').innerText = answers[2];
-			document.getElementById('ans4').innerText = answers[3];
+			document.getElementById("question").innerText = gameQuestion.getString();
+			document.getElementById('ans1').innerText = gameQuestion.answerOptions[0];
+			document.getElementById('ans2').innerText = gameQuestion.answerOptions[1];
+			document.getElementById('ans3').innerText = gameQuestion.answerOptions[2];
+			document.getElementById('ans4').innerText = gameQuestion.answerOptions[3];
 			questionReady = true;
 		}
 		
 		function answer(button) {
-
-			let chosen = document.getElementById("ans" + button).innerText;
-			if (parseInt(chosen) == correctAnswer){
-				score++;
-			}
-			else{
-				score--;
-			} 
 			
-			document.getElementById("score").innerText = parseInt(score);
+			if (gameQuestion.checkOption(button - 1)){
+				score++
+			}else{
+				score--;
+			}
+			
+			document.getElementById("score").innerText = score;
 
 			// generate next question after a short delay
 			newQuestion();
