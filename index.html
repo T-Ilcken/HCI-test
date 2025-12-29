@@ -4,117 +4,22 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Math Quiz</title>
-	<style>
-		body {
-			margin: 0;
-			height: 100vh;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			background: #111;
-			color: white;
-			font-family: sans-serif;
-		}	
-		
-		#container {
-			background: #1e1e1e;
-			padding: 18px 22px;
-			border-radius: 16px;
-			box-shadow: 0 0 18px rgba(0, 0, 0, 0.35);
-			border: 1px solid rgba(255, 255, 255, 0.12);
-
-			width: 75vw;
-			max-width: 600px;
-
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			text-align: center;
-
-		}
-		
-		#question {
-			font-size: 2.2rem;
-			margin: 20px 0;
-			z-index: 99;
-			position: relative;
-		}
-
-/* Container for the four answer buttons */
-		#answers {
-			 position: relative;
-			width: 400px;   
-			height: 400px;     
-			margin-top: 20px;
-		}
-
-/* Shared button styles */
-		.answerButton {
-			position: absolute;
-			width: 120px;
-			height: 120px;
-			border-radius: 20px;
-			font-size: 2rem;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			background: #444;
-			color: white;
-			border: 3px solid white;
-			user-select: none;
-		}
-
-/* Top button */
-		#ans3 {
-			top: 0;
-			left: 50%;
-			transform: translateX(-50%);
-		}
-
-/* Right button */
-		#ans1 {
-			right: 0;
-			top: 50%;
-			transform: translateY(-50%);
-		}
-
-/* Bottom button */
-		#ans4 {
-			bottom: 0;
-			left: 50%;
-			transform: translateX(-50%);
-		}
-
-/* Left button */
-		#ans2 {
-			left: 0;
-			top: 50%;
-			transform: translateY(-50%);
-		}
-	</style>
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
 	<div id="container">
-		<h2>Math Quiz</h2>
-		<div id="modeSelect">
-			<p>Select control mode:</p>
-			<button onclick = "selectMode('click')">Click Mode</button>
-			<button onclick = "selectMode('tilt')">Tilt Mode</button>
+		<h1>Math Quiz <br> Game</h1>
+
+		<div id="ButtonArea">
+
+			<button id="btnStart"> Start Round</button>
+			<button id="btnTilt"> Tilt Control</button>
+			<button id="btnCalibrate"> Calibrate</button>
+			<button id="btnClick"> Click Control</button>
 		</div>
-		<div id = "difficultySelect">
-			<p>Select difficulty Level:</p>
-			<button>1</button>
-			<button>2</button>
-			<button>3</button>
-		</div>
-		<div id = "calibration">
-			<p>calibrate your devices sensors:</p>
-			<button onclick = "selectCalibration()">calibrate</button>
-		</div>
-		<button id = "startButton" style = "display:none;" onclick = "startGame()">Start Game</button>
-		
-		<div id="game" style = "display:none">
-			<p>Time left: <span id = "timer">60</span>s</p>
+
+		<div id="GameField" class="hidden">
+			<p>Time Remaining: <span id = "timer">60</span>s</p>
 			<p>Score: <span id = "score">0</span></p>
 			<div id = "question"></div>
 			<div id = "answers">
@@ -122,174 +27,14 @@
 				<button class = "answerButton" id = "ans2" onclick = "answer(2)"></button>
 				<button class = "answerButton" id = "ans3" onclick = "answer(3)"></button>
 				<button class = "answerButton" id = "ans4" onclick = "answer(4)"></button>
-			</div>
+			</div>	
+
+
 		</div>
-		
-		<div id = "result" style = "display:none"></div>
+		<div id = "result"></div>
+
 	</div>
-	
-	<script>
-		let mode = null;
-		let timer = 60;
-		let score = 0;
-		let correctAnswer = 0;
-		let interval;
-		let betaNeutral = 0;
-		let alphaNeutral = 0;
-		let lastEvent = {alpha: 0, beta: 0};
-		let poll_interval;
-		let waitingForNeutral = false;
-		let questionReady = false;
-		let checkNeutralInterval;
-		let listener;
-		
-		function selectMode(m){
-			mode = m;
-			document.getElementById("startButton").style.display = "Block";
-		}
-		
-		function selectCalibration(){
-			window.addEventListener("deviceorientation",calibrate);
-		}
-		
-		function calibrate(event){
-			betaNeutral = event.beta;
-			alphaNeutral = event.alpha;
-			window.removeEventListener("deviceorientation",calibrate);
-		}
-		
-		function startGame(){
-			score = 0;
-			timer = 60;
-			document.getElementById("score").innerText = score;
-			document.getElementById("timer").innerText = timer;
-			document.getElementById("modeSelect").style.display = "none";
-			document.getElementById("startButton").style.display = "none";
-			document.getElementById("difficultySelect").style.display = "none";
-			document.getElementById("calibration").style.display = "none";
-			document.getElementById("game").style.display = "block";
-			if(mode == "tilt"){
-				document.getElementById("ans1").onclick = null;
-				document.getElementById("ans2").onclick = null;
-				window.addEventListener("deviceorientation", listenToSensors);
-				poll_interval = setInterval(tilt_answer,50);
-			}
-			startTimer();
-			newQuestion();
-		}
-		
-		function startTimer(){
-			interval = setInterval(tick,1000);
-		}
-		
-		function tick(){
-			timer--;
-			document.getElementById("timer").innerText = timer;
-			if(timer < 0){
-				clearInterval(interval);
-				endGame();
-			}
-		}
-		
-		function newQuestion() {
-			// Prepare a new question
-			let a = Math.floor(Math.random() * 10) + 1;
-			let b = Math.floor(Math.random() * 10) + 1;
-			correctAnswer = a + b;
-			let wrong1 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-			let wrong2 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-			let wrong3 = correctAnswer + (Math.floor(Math.random() * 5) + 1);
-			let answers = [correctAnswer, wrong1,wrong2, wrong3];
-			answers = answers.sort(function(){return Math.random() - 0.5});
-
-			document.getElementById("question").innerText = `${a} + ${b}`;
-			document.getElementById('ans1').innerText = answers[0];
-			document.getElementById('ans2').innerText = answers[1];
-			document.getElementById('ans3').innerText = answers[2];
-			document.getElementById('ans4').innerText = answers[3];
-			questionReady = true;
-		}
-		
-		function answer(button) {
-
-			let chosen = document.getElementById("ans" + button).innerText;
-			if (parseInt(chosen) == correctAnswer){
-				score++;
-			}
-			else{
-				score--;
-			} 
-			
-			document.getElementById("score").innerText = parseInt(score);
-
-			// generate next question after a short delay
-			newQuestion();
-		}
-		
-		function tilt_answer() {
-			if(!questionReady || waitingForNeutral){
-				return;
-			}
-			
-			questionReady = false;
-		
-			let alpha = lastEvent.alpha;
-			let beta = lastEvent.beta;
-			
-			let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
-			let betaTilt = beta - betaNeutral;
-			
-			let selected_button = null;
-			
-			if (alphaTilt >= 30){
-				selected_button = 2;
-			}else if (alphaTilt <= -30){
-				selected_button = 1;
-			}else if(betaTilt >= 30){
-				selected_button = 3;
-			}else if (betaTilt <= -30){
-				selectedButton = 4;
-			}
-			
-			if (selected_button != null){
-				waitingForNeutral = true;
-				answer(selected_button);
-			}else{
-				questionReady = true;
-			}
-			
-			if(waitingForNeutral){
-				checkNeutralInterval = setInterval(checkNeutral,50);
-			}
-		}
-		
-		function checkNeutral(){
-			let alpha = lastEvent.alpha;
-			let beta = lastEvent.beta;
-			
-			let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
-			let betaTilt = beta - betaNeutral;
-			
-			if(Math.abs(alphaTilt) < 10 && Math.abs(betaTilt) < 10){
-				clearInterval(checkNeutralInterval);
-				waitingForNeutral = false;
-			}
-		}
-		
-		function listenToSensors(event){
-			lastEvent.alpha = event.alpha;
-			lastEvent.beta = event.beta;
-		}
-		
-		function endGame(){
-			document.getElementById("game").style.display = "none";
-			document.getElementById("result").style.display = "block";
-			document.getElementById("result").innerHTML = `<p>Time is up! Your Score: ${score}</p>`;
-			window.removeEventListener("deviceorientation",listenToSensors);
-			clearInterval(poll_interval);
-		}
-		
-	</script>
+	<script src="game.js"></script>
 </body>
 </html>
 
