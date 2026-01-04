@@ -231,17 +231,18 @@ function tilt_answer() {
 	let beta = lastEvent.beta;
 	
 	let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
-	let betaTilt = beta - betaNeutral;
+	let betaTilt = ((beta - betaNeutral + 180) % 360) - 180;
 	
 	let selected_button = null;
-	
-	if (alphaTilt >= 30){
+	let tilt_value = 30;
+
+	if (alphaTilt >= tilt_value){
 		selected_button = 2;
-	}else if (alphaTilt <= -30){
+	}else if (alphaTilt <= -tilt_value){
 		selected_button = 1;
-	}else if(betaTilt >= 30){
+	}else if(betaTilt >= tilt_value){
 		selected_button = 4;
-	}else if (betaTilt <= -30){
+	}else if (betaTilt <= -tilt_value){
 		selected_button = 3;
 	}
 	
@@ -262,7 +263,7 @@ function checkNeutral(){
 	let beta = lastEvent.beta;
 	
 	let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
-	let betaTilt = beta - betaNeutral;
+	let betaTilt = ((beta - betaNeutral + 180) % 360)  - 180;
 	
 	if(Math.abs(alphaTilt) < 10 && Math.abs(betaTilt) < 10){
 		clearInterval(checkNeutralInterval);
