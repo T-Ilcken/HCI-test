@@ -242,7 +242,7 @@ function tilt_answer() {
 	}else if(betaTilt >= 30){
 		selected_button = 3;
 	}else if (betaTilt <= -30){
-		selectedButton = 4;
+		selected_button = 4;
 	}
 	
 	if (selected_button != null){
