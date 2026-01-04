@@ -232,6 +232,7 @@ function tilt_answer() {
 	
 	let alphaTilt = (alpha - alphaNeutral + 540) % 360 - 180;
 	let betaTilt = ((beta - betaNeutral + 180) % 360) - 180;
+	document.getElementById("TEST").textContent = String(betaTilt);
 	
 	let selected_button = null;
 	let tilt_value = 30;
