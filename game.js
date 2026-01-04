@@ -240,9 +240,9 @@ function tilt_answer() {
 	}else if (alphaTilt <= -30){
 		selected_button = 1;
 	}else if(betaTilt >= 30){
-		selected_button = 3;
+		selected_button = 4;
 	}else if (betaTilt <= -30){
-		selectedButton = 4;
+		selected_button = 3;
 	}
 	
 	if (selected_button != null){
