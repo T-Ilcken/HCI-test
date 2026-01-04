@@ -241,9 +241,9 @@ function tilt_answer() {
 	}else if (alphaTilt <= -tilt_value){
 		selected_button = 1;
 	}else if(betaTilt >= tilt_value){
-		selected_button = 4;
-	}else if (betaTilt <= -tilt_value){
 		selected_button = 3;
+	}else if (betaTilt <= -tilt_value){
+		selected_button = 4;
 	}
 	
 	if (selected_button != null){
