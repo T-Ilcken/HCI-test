@@ -16,6 +16,8 @@ let questionReady = false;
 let checkNeutralInterval;
 let listener;
 let gameQuestion;
+let amountAnswered = 0;
+let correctlyAnsweredQuestions = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     startButton = document.getElementById("btnStart");
@@ -210,11 +212,13 @@ function newQuestion() {
 function answer(button) {
 	
 	if (gameQuestion.checkOption(button - 1)){
-		score++
+		score++;
+		correctlyAnsweredQuestions += 1;
 	}else{
 		score--;
 	}
-	
+
+	amountAnswered += 1;
 	document.getElementById("score").innerText = score;
 
 	newQuestion();
@@ -277,10 +281,18 @@ function listenToSensors(event){
 }
 
 function endGame(){
+	let averageAnswerTime = 0;
+	let mistakeRate = 0;
+	
+	if(amountAnswered != 0){
+		averageAnswerTime = Math.round((60 / amountAnswered) * 100) / 100;
+		mistakeRate = Math.round((1 - (correctlyAnsweredQuestions / amountAnswered)) * 100);
+	}
+
 	gameField.classList.add("hidden");
 	document.getElementById("result").classList.remove("hidden");
 
-	document.getElementById("result").innerHTML = `<p>Time is up! Your Score: ${score}</p>`;
+	document.getElementById("result").innerHTML = `<p>Time is up! Your Score: ${score}</p><p>Average Answer Time: ${averageAnswerTime} s</p><p>Mistake rate: ${mistakeRate} %</p>`;
 	window.removeEventListener("deviceorientation",listenToSensors);
 	clearInterval(poll_interval);
 }
