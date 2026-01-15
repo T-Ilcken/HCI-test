@@ -23,6 +23,16 @@ body {
     border-radius: 16px;
 }
 
+#question.correct {
+    background-color: #c8f7c5; /* light green */
+    border-color: #2ecc71;
+}
+
+#question.wrong {
+    background-color: #f7c5c5; /* light red */
+    border-color: #e74c3c;
+}
+
 /* Container for the four answer buttons */
 #answers {
     position: relative;
@@ -119,6 +129,17 @@ body {
 
 #result.hidden{display: none;}
 
+#result button {
+    min-width: 150px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    border: 2px solid #000;
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    color: cornflowerblue;
+    font-size: large;
+}
 
 h1{
     font-size: 50px;

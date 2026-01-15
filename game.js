@@ -1,4 +1,4 @@
-let startButton, tiltButton, calibrateButton, clickButton;
+let startButton, tiltButton, calibrateButton, clickButton, restartButton;
 let buttonArea, gameField;
 let isTiltActivated = false;
 let isClickActivated = false;
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     clickButton = document.getElementById("btnClick");
     buttonArea = document.getElementById("ButtonArea");
 	gameField = document.getElementById("GameField");
+	restartButton = document.getElementById("btnRestart");
     addButtonListeners();
     initPage();
 });	
@@ -52,6 +53,11 @@ function addButtonListeners() {
         removeUnpressable(startButton);
         addUnpressable(calibrateButton);
     });
+
+	restartButton.addEventListener("click", () => {
+		document.getElementById("result").classList.add("hidden");
+		buttonArea.classList.remove("hidden");
+	});
 }
 
 
@@ -210,12 +216,18 @@ function newQuestion() {
 }
 
 function answer(button) {
+
+	let question = document.getElementById('question');
+	
+	question.classList.remove('correct','wrong');
 	
 	if (gameQuestion.checkOption(button - 1)){
 		score++;
 		correctlyAnsweredQuestions += 1;
+		question.classList.add('correct');
 	}else{
 		score--;
+		question.classList.add('wrong');
 	}
 
 	amountAnswered += 1;
@@ -292,7 +304,7 @@ function endGame(){
 	gameField.classList.add("hidden");
 	document.getElementById("result").classList.remove("hidden");
 
-	document.getElementById("result").innerHTML = `<p>Time is up! Your Score: ${score}</p><p>Average Answer Time: ${averageAnswerTime} s</p><p>Mistake rate: ${mistakeRate} %</p>`;
+	document.getElementById("resultText").innerHTML = `<p>Time is up! Your Score: ${score}</p><p>Average Answer Time: ${averageAnswerTime} s</p><p>Mistake rate: ${mistakeRate} %</p>`;
 	window.removeEventListener("deviceorientation",listenToSensors);
 	clearInterval(poll_interval);
 }
