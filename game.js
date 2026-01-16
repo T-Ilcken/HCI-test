@@ -309,4 +309,7 @@ function endGame(){
 	document.getElementById("resultText").innerHTML = `<p>Time is up! Your Score: ${score}</p><p>Average Answer Time: ${averageAnswerTime} s</p><p>Mistake rate: ${mistakeRate} %</p>`;
 	window.removeEventListener("deviceorientation",listenToSensors);
 	clearInterval(poll_interval);
+	
+	correctlyAnsweredQuestions = 0;
+	amountAnswered = 0;
 }
