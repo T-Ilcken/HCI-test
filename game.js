@@ -81,6 +81,8 @@ function selectCalibration(){
 function calibrate(event){
     betaNeutral = event.beta;
     alphaNeutral = event.alpha;
+	lastEvent.beta = betaNeutral;
+	lastEvent.alpha = alphaNeutral;
     window.removeEventListener("deviceorientation",calibrate);
 }
 
