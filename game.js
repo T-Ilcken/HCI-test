@@ -37,29 +37,20 @@ function addButtonListeners() {
     });
     
     tiltButton.addEventListener("click", () => {
-        isTiltActivated = true;
-        isClickActivated = false;
-        removeUnpressable(startButton);
-        removeUnpressable(calibrateButton);
+		tiltButtonAction();
     });
     calibrateButton.addEventListener("click", () => {
         selectCalibration();
     });
 
-
     clickButton.addEventListener("click", () =>{
-        isClickActivated = true;
-        isTiltActivated = false;
-        removeUnpressable(startButton);
-        addUnpressable(calibrateButton);
+		clickButtonAction();
     });
 
 	restartButton.addEventListener("click", () => {
-		document.getElementById("result").classList.add("hidden");
-		buttonArea.classList.remove("hidden");
+		restartButtonAction();
 	});
 }
-
 
 function initPage() {
     addUnpressable(calibrateButton);
@@ -72,6 +63,25 @@ function startRound() {
 	gameQuestion = new Question();
 	startGame();
 
+}
+
+function tiltButtonAction() {
+	isTiltActivated = true;
+	isClickActivated = false;
+	removeUnpressable(startButton);
+	removeUnpressable(calibrateButton);	
+}
+
+function clickButtonAction() {
+	isClickActivated = true;
+	isTiltActivated = false;
+	removeUnpressable(startButton);
+	addUnpressable(calibrateButton);	
+}
+
+function restartButtonAction() {
+	document.getElementById("result").classList.add("hidden");
+	buttonArea.classList.remove("hidden");
 }
 
 function selectCalibration(){
